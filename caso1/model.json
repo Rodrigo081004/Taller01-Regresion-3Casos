@@ -1,0 +1,150 @@
+{
+  "info": {
+    "dataset": "California Housing (housing.csv)",
+    "rows": 20433,
+    "features": 12,
+    "method": "Regresión lineal múltiple (scikit-learn LinearRegression)",
+    "test_split": 0.2
+  },
+  "target": {
+    "column": "median_house_value",
+    "min": 14999.0,
+    "max": 500001.0,
+    "mean": 206864.41315519012,
+    "median": 179700.0
+  },
+  "metrics": {
+    "r2": 0.6488,
+    "mae": 50413.43,
+    "rmse": 69297.72,
+    "n": 20433,
+    "n_test": 4087
+  },
+  "features": [
+    "longitude",
+    "latitude",
+    "housing_median_age",
+    "total_rooms",
+    "total_bedrooms",
+    "population",
+    "households",
+    "median_income",
+    "ocean_proximity_INLAND",
+    "ocean_proximity_ISLAND",
+    "ocean_proximity_NEAR BAY",
+    "ocean_proximity_NEAR OCEAN"
+  ],
+  "intercept": -2299273.762102974,
+  "coefficients": {
+    "longitude": -27108.74632117337,
+    "latitude": -25657.80754267079,
+    "housing_median_age": 1081.364206273323,
+    "total_rooms": -6.322145519679907,
+    "total_bedrooms": 103.00404177119071,
+    "population": -36.40975136878842,
+    "households": 43.142724918101976,
+    "median_income": 39277.0830197128,
+    "ocean_proximity_INLAND": -39240.2177784748,
+    "ocean_proximity_ISLAND": 213653.37446282132,
+    "ocean_proximity_NEAR BAY": -6232.416876236553,
+    "ocean_proximity_NEAR OCEAN": 3166.4771282392917
+  },
+  "ranges": {
+    "longitude": {
+      "min": -124.35,
+      "max": -114.31,
+      "step": 1.0,
+      "default": -119.5707
+    },
+    "latitude": {
+      "min": 32.54,
+      "max": 41.95,
+      "step": 1.0,
+      "default": 35.6332
+    },
+    "housing_median_age": {
+      "min": 1.0,
+      "max": 52.0,
+      "step": 1.0,
+      "default": 28.6331
+    },
+    "total_rooms": {
+      "min": 2.0,
+      "max": 39320.0,
+      "step": 393.18,
+      "default": 2636.5042
+    },
+    "total_bedrooms": {
+      "min": 1.0,
+      "max": 6445.0,
+      "step": 64.44,
+      "default": 537.8706
+    },
+    "population": {
+      "min": 3.0,
+      "max": 35682.0,
+      "step": 356.79,
+      "default": 1424.9469
+    },
+    "households": {
+      "min": 1.0,
+      "max": 6082.0,
+      "step": 60.81,
+      "default": 499.4335
+    },
+    "median_income": {
+      "min": 0.4999,
+      "max": 15.0001,
+      "step": 1.0,
+      "default": 3.8712
+    }
+  },
+  "categorical": {
+    "column": "ocean_proximity",
+    "options": [
+      "<1H OCEAN",
+      "INLAND",
+      "ISLAND",
+      "NEAR BAY",
+      "NEAR OCEAN"
+    ],
+    "dummy_features": [
+      "ocean_proximity_INLAND",
+      "ocean_proximity_ISLAND",
+      "ocean_proximity_NEAR BAY",
+      "ocean_proximity_NEAR OCEAN"
+    ],
+    "encoding": {
+      "<1H OCEAN": {
+        "ocean_proximity_INLAND": 0.0,
+        "ocean_proximity_ISLAND": 0.0,
+        "ocean_proximity_NEAR BAY": 0.0,
+        "ocean_proximity_NEAR OCEAN": 0.0
+      },
+      "INLAND": {
+        "ocean_proximity_INLAND": 1.0,
+        "ocean_proximity_ISLAND": 0.0,
+        "ocean_proximity_NEAR BAY": 0.0,
+        "ocean_proximity_NEAR OCEAN": 0.0
+      },
+      "ISLAND": {
+        "ocean_proximity_INLAND": 0.0,
+        "ocean_proximity_ISLAND": 1.0,
+        "ocean_proximity_NEAR BAY": 0.0,
+        "ocean_proximity_NEAR OCEAN": 0.0
+      },
+      "NEAR BAY": {
+        "ocean_proximity_INLAND": 0.0,
+        "ocean_proximity_ISLAND": 0.0,
+        "ocean_proximity_NEAR BAY": 1.0,
+        "ocean_proximity_NEAR OCEAN": 0.0
+      },
+      "NEAR OCEAN": {
+        "ocean_proximity_INLAND": 0.0,
+        "ocean_proximity_ISLAND": 0.0,
+        "ocean_proximity_NEAR BAY": 0.0,
+        "ocean_proximity_NEAR OCEAN": 1.0
+      }
+    }
+  }
+}

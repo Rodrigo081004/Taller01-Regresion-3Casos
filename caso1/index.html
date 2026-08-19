@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador de Precios de Casas — Regresión Lineal Múltiple</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --card2: #263449;
+    --border: #334155;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --accent: #38bdf8;
+    --accent2: #818cf8;
+    --green: #34d399;
+    --red: #f87171;
+    --amber: #fbbf24;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  header {
+    background: linear-gradient(135deg, #0ea5e9, #6366f1);
+    padding: 32px 20px;
+    text-align: center;
+  }
+  header h1 { font-size: 1.7rem; font-weight: 800; color: #fff; }
+  header p { color: #e0f2fe; margin-top: 6px; font-size: .95rem; }
+  .badges { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+  .badge {
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.35);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: .82rem;
+    font-weight: 600;
+    color: #fff;
+  }
+  .badge span { font-weight: 800; }
+  main {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 28px 20px 60px;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 24px;
+  }
+  @media (max-width: 860px) { main { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px;
+  }
+  .card h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: flex;
+    justify-content: space-between;
+    font-size: .88rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .field label output {
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+  }
+  input[type=range] {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--accent) var(--pct, 50%), var(--border) var(--pct, 50%));
+    outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid var(--accent);
+    cursor: pointer;
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid var(--accent);
+    cursor: pointer;
+  }
+  .field select {
+    width: 100%;
+    background: var(--card2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: .92rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .result {
+    position: sticky;
+    top: 20px;
+  }
+  .price-box {
+    background: linear-gradient(135deg, var(--card2), var(--card));
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    text-align: center;
+  }
+  .price-box .label { font-size: .8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 700; }
+  .price-box .value {
+    font-size: 2.6rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--green), var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin: 8px 0 4px;
+  }
+  .price-box .sub { font-size: .8rem; color: var(--muted); }
+  .bar-track {
+    margin-top: 18px;
+    height: 10px;
+    background: var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--green));
+    border-radius: 6px;
+    transition: width .25s ease;
+  }
+  .bar-labels { display: flex; justify-content: space-between; font-size: .72rem; color: var(--muted); margin-top: 6px; }
+  .refs { margin-top: 16px; }
+  .ref {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: .85rem;
+  }
+  .ref:last-child { border-bottom: none; }
+  .ref b { color: var(--text); font-variant-numeric: tabular-nums; }
+  .note {
+    margin-top: 18px;
+    font-size: .78rem;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+  footer {
+    text-align: center;
+    padding: 20px;
+    font-size: .78rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🏠 Simulador de Precios de Casas</h1>
+  <p>Regresión lineal múltiple · California Housing (housing.csv)</p>
+  <div class="badges" id="badges"></div>
+</header>
+
+<main>
+  <section class="card">
+    <h2>📋 Parámetros de la vivienda</h2>
+    <div id="fields"></div>
+  </section>
+
+  <section class="card result">
+    <h2>📈 Precio estimado</h2>
+    <div class="price-box">
+      <div class="label">Valor estimado de la casa</div>
+      <div class="value" id="price">—</div>
+      <div class="sub" id="priceSub">Ajusta los parámetros para actualizar</div>
+    </div>
+    <div class="bar-track"><div class="bar-fill" id="bar"></div></div>
+    <div class="bar-labels"><span id="barMin">—</span><span id="barMax">—</span></div>
+    <div class="refs" id="refs"></div>
+    <p class="note" id="note"></p>
+  </section>
+</main>
+
+<footer>
+  Modelo entrenado con scikit-learn · Predicción calculada en tu navegador ·
+  <a href="https://github.com/Rodrigo081004/Taller01-Regresion-3Casos" target="_blank" rel="noopener">Repositorio en GitHub</a>
+</footer>
+
+<script src="simulador.js"></script>
+</body>
+</html>

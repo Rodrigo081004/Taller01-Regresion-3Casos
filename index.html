@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taller 1.1 — Modelado Predictivo Multi-Caso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --card2: #263449;
+    --border: #334155;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --accent: #38bdf8;
+    --accent2: #818cf8;
+    --green: #34d399;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: linear-gradient(135deg, #0ea5e9, #6366f1);
+    padding: 44px 20px;
+    text-align: center;
+  }
+  header h1 { font-size: 1.9rem; font-weight: 800; color: #fff; }
+  header p { color: #e0f2fe; margin-top: 8px; font-size: .98rem; max-width: 720px; margin-inline: auto; line-height: 1.55; }
+  .badges { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 18px; }
+  .badge {
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.35);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: .8rem;
+    font-weight: 600;
+    color: #fff;
+  }
+  main {
+    max-width: 1060px;
+    margin: 0 auto;
+    padding: 36px 20px 60px;
+    width: 100%;
+  }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 22px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    text-decoration: none;
+    color: var(--text);
+  }
+  a.card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+    box-shadow: 0 12px 30px rgba(56,189,248,.15);
+  }
+  .card .icon { font-size: 2.1rem; }
+  .card h2 { font-size: 1.15rem; font-weight: 800; }
+  .card .case { font-size: .72rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--accent); }
+  .card p { font-size: .87rem; color: var(--muted); line-height: 1.55; flex: 1; }
+  .card .meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .78rem;
+    font-weight: 600;
+  }
+  .card .models {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .tag {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: .72rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .tag.pending { color: var(--muted); }
+  .btn {
+    margin-top: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #0ea5e9, #6366f1);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 18px;
+    font-size: .9rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .card.disabled {
+    opacity: .55;
+    cursor: not-allowed;
+  }
+  .card.disabled .btn {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    cursor: not-allowed;
+  }
+  footer {
+    margin-top: auto;
+    text-align: center;
+    padding: 20px;
+    font-size: .78rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📊 Taller 1.1 — Modelado Predictivo Multisectorial</h1>
+  <p>Regresión lineal múltiple y regresión polinomial aplicadas a tres dominios: vivienda, vino y salud. Selecciona un caso para abrir su simulador interactivo.</p>
+  <div class="badges">
+    <div class="badge">📁 3 casos de estudio</div>
+    <div class="badge">📈 Regresión lineal múltiple</div>
+    <div class="badge">🔺 Regresión polinomial</div>
+    <div class="badge">🌐 100 % en el navegador</div>
+  </div>
+</header>
+
+<main>
+  <div class="grid">
+
+    <a class="card" href="caso1/index.html">
+      <div class="icon">🏠</div>
+      <div class="case">Caso 1 · California Housing</div>
+      <h2>Predicción de Precios de Casas</h2>
+      <p>Estima el valor medio de una vivienda en distritos de California a partir de ingresos, edad de la casa, ubicación geográfica y proximidad al océano.</p>
+      <div class="meta">
+        <div class="models">
+          <span class="tag">Regresión lineal múltiple ✓</span>
+          <span class="tag">Regresión polinomial ✓</span>
+        </div>
+      </div>
+      <span class="btn">Abrir simulador →</span>
+    </a>
+
+    <div class="card disabled" title="Próximamente">
+      <div class="icon">🍷</div>
+      <div class="case">Caso 2 · Wine Quality</div>
+      <h2>Predicción de Calidad del Vino</h2>
+      <p>Determina la calidad del vino (escala 0–10) a partir de propiedades físico-químicas como acidez, azúcar residual, cloruros y alcohol.</p>
+      <div class="meta">
+        <div class="models">
+          <span class="tag pending">Regresión lineal múltiple</span>
+          <span class="tag pending">Regresión polinomial</span>
+        </div>
+      </div>
+      <span class="btn">Próximamente</span>
+    </div>
+
+    <div class="card disabled" title="Próximamente">
+      <div class="icon">🩺</div>
+      <div class="case">Caso 3 · Diabetes (Scikit-learn)</div>
+      <h2>Predicción de Progresión de la Enfermedad</h2>
+      <p>Predice la progresión cuantitativa de la enfermedad un año después del inicio, basada en 10 variables basales (edad, IMC, presión arterial, etc.).</p>
+      <div class="meta">
+        <div class="models">
+          <span class="tag pending">Regresión lineal múltiple</span>
+          <span class="tag pending">Regresión polinomial</span>
+        </div>
+      </div>
+      <span class="btn">Próximamente</span>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  Taller 1.1 · Inteligencia Artificial / Aprendizaje Automático ·
+  <a href="https://github.com/Rodrigo081004/Taller01-Regresion-3Casos" target="_blank" rel="noopener">Repositorio en GitHub</a>
+</footer>
+
+</body>
+</html>

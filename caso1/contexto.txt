@@ -1,0 +1,116 @@
+CONTEXTO DE SESIÓN — Simulador de Precios de Casas (Regresión Lineal Múltiple)
+=============================================================================
+Fecha: 17/08/2026
+Ruta de trabajo: C:\Users\rodri\OneDrive\Desktop\REGRESION
+Repositorio: https://github.com/Rodrigo081004/RegresionLinealMultiple-Housing
+Pages (tras activar): https://rodrigo081004.github.io/RegresionLinealMultiple-Housing/
+
+OBJETIVO
+--------
+Construir un simulador de precios de casas usando housing.csv (California
+Housing) con regresión lineal múltiple, en Python + HTML, desplegable en
+GitHub Pages (estático, sin servidor).
+
+DATASET
+-------
+- housing.csv: 20,640 filas, 10 columnas (longitude, latitude,
+  housing_median_age, total_rooms, total_bedrooms, population, households,
+  median_income, median_house_value, ocean_proximity).
+- 207 valores faltantes (total_bedrooms) -> se eliminan con dropna().
+- Datos finales: 20,433 filas.
+- ocean_proximity: 5 categorías (<1H OCEAN, INLAND, ISLAND, NEAR BAY,
+  NEAR OCEAN). One-hot con drop_first=True (base: <1H OCEAN).
+
+MODELO
+------
+- Librería: scikit-learn LinearRegression (mínimos cuadrados ordinarios).
+- Predictores: 12 (8 numéricos + 4 dummies de ocean_proximity).
+- Split: train_test_split(test_size=0.2, random_state=42).
+- Métricas test: R² = 0.6488 | MAE = $50,413.43 | RMSE = $69,297.72.
+- Intercepto: -2,299,273.76.
+- Fórmula: precio = intercepto + Σ(coefᵢ × varᵢ).
+
+ARCHIVOS CREADOS (ya subidos a GitHub, rama main)
+--------------------------------------------------
+1. train_model.py
+   - Lee housing.csv, imputa/elimina NaN, one-hot de ocean_proximity.
+   - Entrena LinearRegression y exporta model.json con:
+     info, target (min/max/mean/median del precio), metrics (r2, mae,
+     rmse, n, n_test), features, intercept, coefficients, ranges
+     (min/max/step/default=media por variable), categorical
+     (options, dummy_features, encoding solo con dummies).
+   - IMPORTANTE: el encoding NO debe incluir las variables numéricas
+     (bug corregido: antes sobrescribía con 0 y arruinaba la predicción).
+   - Uso: python train_model.py
+
+2. model.json (generado por train_model.py, 176 líneas)
+   - Contiene coeficientes, intercepto, métricas, rangos y codificación.
+
+3. index.html
+   - Tema oscuro, tarjetas, badges de métricas (R², MAE, filas).
+   - Panel izquierdo: sliders para 8 numéricas + select ocean_proximity.
+   - Panel derecho: precio estimado, barra comparativa vs min/max del
+     dataset, referencias (mínimo/mediana/media/máximo).
+   - Sliders con fill degradado via CSS var --pct.
+   - Valores por defecto = MEDIA de cada variable (no el punto medio,
+     porque daba precios negativos).
+
+4. simulador.js
+   - fetch("model.json"), construye inputs desde MODEL.ranges.
+   - currentVector(): inicializa todos los features en 0, llena numéricas
+     desde sliders, aplica encoding[categoría] (solo dummies).
+   - predict(): price = intercept + Σ coef*f; clamp a >= 0.
+   - fmtUSD: formato moneda USD.
+   - Carga model.json relativo (requiere servidor local o Pages,
+     NO abrir como file://).
+
+5. README.md — documentación completa (estructura, modelo, uso local,
+   despliegue Pages, notas).
+6. requirements.txt — pandas>=2.0, numpy>=1.24, scikit-learn>=1.3.
+
+ENTORNO
+-------
+- Windows 11, PowerShell 5.1, Python 3.14.6.
+- Instalado: pandas 3.0.5 (antes faltaba), sklearn 1.9.0, numpy 2.5.2.
+- Git 2.55.0. gh CLI NO instalado (se usa git directo).
+- git config: user.name=Rodrigo081004, user.email=022100296d@uandina.edu.pe
+
+GIT / GITHUB
+------------
+- git init local, rama renombrada a "main" (master por defecto no sirve
+  para Pages).
+- Commit: 0644b9f "Simulador de precios de casas con regresion lineal
+  multiple" (7 archivos).
+- Push: git push -u origin main — EXITOSO.
+- Remoto verificado con git ls-remote (refs/heads/main presente).
+
+PENDIENTE (manual, usuario)
+---------------------------
+1. Activar GitHub Pages: Settings → Pages → Build and deployment →
+   Deploy from a branch → main / (root). El README ya documenta esto.
+2. (Opcional) Probar con python -m http.server 8000 en local.
+
+VERIFICACIONES HECHAS
+---------------------
+- Paridad Python vs JS verificada con 3 pruebas (medias + filas aleatorias
+  con <1H OCEAN y NEAR BAY): sklearn == fórmula JS exacta.
+  NOTA: hubo un falso positivo antes de corregir el encoding (ambos
+  predecían el vector vacío = intercepto).
+- Precio por defecto del simulador: $219,279.92 (sensible, media real
+  $206,864).
+
+ERRORES/BUGS ENCONTRADOS Y CORREGIDOS
+-------------------------------------
+1. encoding de categorías incluía TODAS las features con 0.0, lo que
+   sobrescribía los valores numéricos -> predijo solo el intercepto.
+   Fix: encoding solo con dummy_features.
+2. Sliders con punto medio como default -> precio negativo. Fix: usar
+   media (default en ranges del JSON).
+3. Rama local master -> renombrada a main para Pages.
+
+NOTAS EDUCATIVAS
+----------------
+- R² ~0.65 es lo esperado para datos crudos de California Housing sin
+  ingeniería de características; modelo educativo, no apto para
+  valoración real.
+- El precio máximo del dataset está truncado en $500,001 (oficial).

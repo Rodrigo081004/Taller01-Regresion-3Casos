@@ -1,0 +1,34 @@
+{
+  "modelos": [
+    {
+      "modelo": "Lineal Múltiple",
+      "grado": 1,
+      "r2_train": 0.6684,
+      "mae_train": 48105.43,
+      "rmse_train": 66253.88,
+      "r2_test": 0.6675,
+      "mae_test": 49131.13,
+      "rmse_test": 67435.39
+    },
+    {
+      "modelo": "Polinomial grado 2",
+      "grado": 2,
+      "r2_train": 0.7348,
+      "mae_train": 41860.08,
+      "rmse_train": 59246.41,
+      "r2_test": 0.7262,
+      "mae_test": 43149.24,
+      "rmse_test": 61184.93
+    },
+    {
+      "modelo": "Polinomial grado 3",
+      "grado": 3,
+      "r2_train": 0.7845,
+      "mae_train": 37151.97,
+      "rmse_train": 53413.06,
+      "r2_test": 0.7649,
+      "mae_test": 39360.69,
+      "rmse_test": 56699.6
+    }
+  ]
+}
