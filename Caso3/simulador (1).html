@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caso 3 — Predicción de Diabetes</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --accent: #38bdf8;
+    --accent2: #a78bfa;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --good: #34d399;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(160deg, #0f172a 0%, #1e1b4b 100%);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 32px 16px;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 28px; }
+  header h1 { font-size: 1.7rem; margin: 0 0 6px; }
+  header p { color: var(--muted); margin: 0; font-size: 0.95rem; }
+  .badge {
+    display: inline-block;
+    background: rgba(56,189,248,0.15);
+    color: var(--accent);
+    border: 1px solid rgba(56,189,248,0.4);
+    padding: 3px 12px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    margin-bottom: 10px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 20px;
+  }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 22px;
+  }
+  .card h2 {
+    font-size: 1.05rem;
+    margin: 0 0 16px;
+    color: var(--accent2);
+  }
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .field label span.val { color: var(--text); font-weight: 600; }
+  input[type=range] {
+    width: 100%;
+    accent-color: var(--accent);
+  }
+  select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    background: #0f172a;
+    color: var(--text);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .result-box {
+    text-align: center;
+    padding: 24px 12px;
+  }
+  .result-value {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--good);
+    margin: 6px 0;
+  }
+  .result-label { color: var(--muted); font-size: 0.85rem; }
+  .gauge {
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.08);
+    margin: 18px 0 8px;
+    overflow: hidden;
+  }
+  .gauge-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #34d399, #38bdf8, #a78bfa, #f87171);
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  .gauge-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+  .presets { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+  .presets button {
+    flex: 1;
+    min-width: 90px;
+    background: rgba(167,139,250,0.12);
+    border: 1px solid rgba(167,139,250,0.35);
+    color: var(--accent2);
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.8rem;
+  }
+  .presets button:hover { background: rgba(167,139,250,0.25); }
+  .note {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 16px;
+    line-height: 1.5;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 14px;
+  }
+  .metrics {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .metric {
+    flex: 1;
+    background: rgba(255,255,255,0.04);
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+  }
+  .metric b { display: block; font-size: 1.1rem; color: var(--accent); }
+  .metric span { font-size: 0.7rem; color: var(--muted); }
+
+  .compare-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .compare-row .compare-label {
+    width: 90px;
+    font-size: 0.78rem;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+  .compare-bars { flex: 1; }
+  .compare-bar-track {
+    position: relative;
+    height: 22px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.06);
+    margin-bottom: 6px;
+    overflow: hidden;
+  }
+  .compare-bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #0f172a;
+    white-space: nowrap;
+  }
+  .fill-lineal { background: var(--good); }
+  .fill-poly { background: var(--accent2); }
+  .legend {
+    display: flex;
+    gap: 18px;
+    justify-content: center;
+    margin-bottom: 16px;
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .winner-tag {
+    text-align: center;
+    background: rgba(52,211,153,0.12);
+    border: 1px solid rgba(52,211,153,0.4);
+    color: var(--good);
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 0.85rem;
+    margin-top: 6px;
+  }
+  footer {
+    text-align: center;
+    margin-top: 24px;
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="badge">Caso 3 · Diabetes</span>
+    <h1>Simulador de Progresión de Diabetes</h1>
+    <p>Regresión Lineal Múltiple entrenada sobre el dataset Diabetes (Scikit-learn)</p>
+  </header>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Variables del paciente</h2>
+      <div id="sliders"></div>
+      <div class="presets">
+        <button onclick="loadPreset('bajo')">Caso bajo riesgo</button>
+        <button onclick="loadPreset('medio')">Caso promedio</button>
+        <button onclick="loadPreset('alto')">Caso alto riesgo</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Predicción del modelo</h2>
+      <div class="result-box">
+        <div class="result-label">Progresión estimada (índice)</div>
+        <div class="result-value" id="prediction">—</div>
+        <div class="gauge"><div class="gauge-fill" id="gaugeFill"></div></div>
+        <div class="gauge-labels"><span>Baja</span><span>Alta</span></div>
+      </div>
+      <div class="metrics">
+        <div class="metric"><b>0.4526</b><span>R² (test)</span></div>
+        <div class="metric"><b>42.79</b><span>MAE</span></div>
+        <div class="metric"><b>53.85</b><span>RMSE</span></div>
+      </div>
+      <div class="note">
+        El modelo usa las 10 variables estandarizadas (StandardScaler) y los coeficientes obtenidos en el entrenamiento (analisis_diabetes.py). El cálculo se hace aquí mismo en el navegador con esos mismos parámetros — no requiere ejecutar Python para probarlo.
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h2>Comparación de modelos — Caso Diabetes</h2>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--good)"></i>Regresión Lineal Múltiple</span>
+      <span><i class="dot" style="background:var(--accent2)"></i>Regresión Polinomial (grado 2)</span>
+    </div>
+
+    <div class="compare-row">
+      <div class="compare-label">R² (test)</div>
+      <div class="compare-bars">
+        <div class="compare-bar-track"><div class="compare-bar-fill fill-lineal" style="width:90.5%">0.4526</div></div>
+        <div class="compare-bar-track"><div class="compare-bar-fill fill-poly" style="width:83.1%">0.4156</div></div>
+      </div>
+    </div>
+
+    <div class="compare-row">
+      <div class="compare-label">MAE</div>
+      <div class="compare-bars">
+        <div class="compare-bar-track"><div class="compare-bar-fill fill-lineal" style="width:76.9%">42.79</div></div>
+        <div class="compare-bar-track"><div class="compare-bar-fill fill-poly" style="width:78.3%">43.58</div></div>
+      </div>
+    </div>
+
+    <div class="compare-row">
+      <div class="compare-label">RMSE</div>
+      <div class="compare-bars">
+        <div class="compare-bar-track"><div class="compare-bar-fill fill-lineal" style="width:77.4%">53.85</div></div>
+        <div class="compare-bar-track"><div class="compare-bar-fill fill-poly" style="width:80%">55.64</div></div>
+      </div>
+    </div>
+
+    <div class="winner-tag">
+      🏆 La Regresión Lineal Múltiple obtuvo mejor desempeño (mayor R², menor MAE y RMSE). El modelo Polinomial de grado 2 no mejora la generalización en este caso — probablemente sobreajusta al pasar de 10 a 65 características frente a solo 442 registros.
+    </div>
+  </div>
+
+  <footer>Taller 1 · Inteligencia Artificial / Aprendizaje Automático · 2026-II · Jose Andia</footer>
+</div>
+
+<script>
+// Parámetros reales exportados del modelo entrenado (StandardScaler + LinearRegression)
+const MODEL = {
+  columns: ["age","sex","bmi","bp","s1","s2","s3","s4","s5","s6"],
+  labels: ["Edad","Sexo","IMC","Presión arterial","Colesterol total (s1)","LDL (s2)","HDL (s3)","Colesterol/HDL (s4)","Triglicéridos (s5)","Glucosa (s6)"],
+  mean:  [0.00144,0.00018,0.00174,0.00118,-0.00056,-0.00081,-0.00099,0.00038,0.00122,0.00189],
+  scale: [0.04627,0.04758,0.04721,0.04840,0.04772,0.04756,0.04698,0.04772,0.04776,0.04831],
+  coef:  [1.7538,-11.5118,25.6071,16.8289,-44.4489,24.6410,7.6770,13.1388,35.1612,2.3514],
+  intercept: 153.7365,
+  min: [-0.1072,-0.0446,-0.0903,-0.1124,-0.1268,-0.1156,-0.1023,-0.0764,-0.1261,-0.1378],
+  max: [0.1107,0.0507,0.1706,0.1320,0.1539,0.1988,0.1812,0.1852,0.1336,0.1356]
+};
+
+const PRESETS = {
+  bajo:  [-0.05, -0.044, -0.05, -0.05, -0.03, -0.03, 0.05, -0.05, -0.05, -0.05],
+  medio: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  alto:  [0.06, 0.05, 0.10, 0.09, 0.08, 0.10, -0.06, 0.10, 0.08, 0.08],
+};
+
+const slidersDiv = document.getElementById('sliders');
+const values = MODEL.mean.slice();
+
+MODEL.columns.forEach((col, i) => {
+  const field = document.createElement('div');
+  field.className = 'field';
+
+  if (col === 'sex') {
+    field.innerHTML = `
+      <label>${MODEL.labels[i]}</label>
+      <select id="input_${i}">
+        <option value="${MODEL.min[i]}">Femenino</option>
+        <option value="${MODEL.max[i]}">Masculino</option>
+      </select>`;
+    slidersDiv.appendChild(field);
+    document.getElementById(`input_${i}`).addEventListener('change', (e) => {
+      values[i] = parseFloat(e.target.value);
+      predict();
+    });
+    return;
+  }
+
+  field.innerHTML = `
+    <label>${MODEL.labels[i]} <span class="val" id="label_${i}">0.00</span></label>
+    <input type="range" id="input_${i}" min="${MODEL.min[i]}" max="${MODEL.max[i]}" step="0.001" value="0">
+  `;
+  slidersDiv.appendChild(field);
+  document.getElementById(`input_${i}`).addEventListener('input', (e) => {
+    values[i] = parseFloat(e.target.value);
+    document.getElementById(`label_${i}`).textContent = values[i].toFixed(3);
+    predict();
+  });
+});
+
+function predict() {
+  let z = MODEL.intercept;
+  for (let i = 0; i < MODEL.columns.length; i++) {
+    const scaled = (values[i] - MODEL.mean[i]) / MODEL.scale[i];
+    z += MODEL.coef[i] * scaled;
+  }
+  const pred = Math.max(25, Math.min(346, z));
+  document.getElementById('prediction').textContent = pred.toFixed(1);
+
+  const pct = ((pred - 25) / (346 - 25)) * 100;
+  document.getElementById('gaugeFill').style.width = pct + '%';
+}
+
+function loadPreset(name) {
+  const preset = PRESETS[name];
+  MODEL.columns.forEach((col, i) => {
+    values[i] = preset[i];
+    const el = document.getElementById(`input_${i}`);
+    if (col === 'sex') {
+      el.value = preset[i] < 0 ? MODEL.min[i] : MODEL.max[i];
+    } else {
+      el.value = preset[i];
+      document.getElementById(`label_${i}`).textContent = preset[i].toFixed(3);
+    }
+  });
+  predict();
+}
+
+loadPreset('medio');
+</script>
+</body>
+</html>
