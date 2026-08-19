@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caso 2: Wine Quality — Predicción de Calidad de Vino Tinto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --card2: #263449;
+    --border: #334155;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --accent: #38bdf8;
+    --accent2: #818cf8;
+    --green: #34d399;
+    --red: #f87171;
+    --amber: #fbbf24;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  header {
+    background: linear-gradient(135deg, #7c3aed, #db2777);
+    padding: 32px 20px;
+    text-align: center;
+  }
+  header h1 { font-size: 1.7rem; font-weight: 800; color: #fff; }
+  header p { color: #fce7f3; margin-top: 6px; font-size: .95rem; }
+  .badges { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+  .badge {
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.35);
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: .82rem;
+    font-weight: 600;
+    color: #fff;
+  }
+  .badge span { font-weight: 800; }
+  main {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 28px 20px 60px;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 24px;
+  }
+  @media (max-width: 860px) { main { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px;
+  }
+  .card h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: flex;
+    justify-content: space-between;
+    font-size: .88rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .field label output {
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+  }
+  input[type=range] {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--accent) var(--pct, 50%), var(--border) var(--pct, 50%));
+    outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid var(--accent);
+    cursor: pointer;
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid var(--accent);
+    cursor: pointer;
+  }
+  .result-big {
+    font-size: 2.6rem;
+    font-weight: 800;
+    color: var(--accent);
+    margin: 6px 0 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .result-sub { color: var(--muted); font-size: .9rem; margin-bottom: 14px; }
+  .bar-track {
+    background: var(--border);
+    border-radius: 8px;
+    height: 14px;
+    overflow: hidden;
+    margin: 10px 0 6px;
+  }
+  .bar-track > div {
+    height: 100%;
+    width: 0%;
+    border-radius: 8px;
+    transition: width .15s ease;
+  }
+  .bar-scale { display: flex; justify-content: space-between; color: var(--muted); font-size: .75rem; }
+  .refs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+  .ref {
+    background: var(--card2);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: .8rem;
+    color: var(--muted);
+  }
+  .ref b { display: block; color: var(--text); font-size: 1rem; margin-top: 2px; }
+  #note {
+    grid-column: 1 / -1;
+    font-size: .82rem;
+    color: var(--muted);
+    background: var(--card);
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+  }
+  section.full {
+    grid-column: 1 / -1;
+  }
+  .fig-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 860px) { .fig-grid { grid-template-columns: 1fr; } }
+  .fig-grid figure { background: var(--card2); border-radius: 12px; padding: 10px; }
+  .fig-grid img { width: 100%; border-radius: 8px; display: block; }
+  .fig-grid figcaption { text-align: center; color: var(--muted); font-size: .8rem; padding: 8px 4px 4px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .86rem;
+    margin-top: 6px;
+  }
+  th, td { padding: 8px 10px; text-align: center; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 600; }
+  td:first-child, th:first-child { text-align: left; }
+  tr.best td { background: rgba(52, 211, 153, .12); color: var(--green); font-weight: 700; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 860px) { .two-col { grid-template-columns: 1fr; } }
+  .hint { color: var(--muted); font-size: .78rem; margin-top: 4px; }
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: .8rem;
+    padding: 24px;
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🍷 Caso 2: Wine Quality — Vino Tinto</h1>
+  <p>Predicción de la calidad del vino (0–10) a partir de sus propiedades físico-químicas</p>
+  <div class="badges" id="badges"></div>
+</header>
+
+<main>
+  <div class="card">
+    <h2>⚙️ Simulador interactivo</h2>
+    <div id="fields"></div>
+  </div>
+
+  <div class="card">
+    <h2>📊 Resultado</h2>
+    <div class="result-big" id="predValue">—</div>
+    <div class="result-sub">Calidad estimada (~ <span id="predRounded">—</span>) · <span id="verdict">—</span></div>
+    <div class="bar-track"><div id="bar"></div></div>
+    <div class="bar-scale"><span>0</span><span>10</span></div>
+    <div class="refs" id="refs"></div>
+    <p class="hint" style="margin-top:14px">El modelo ganador (polinomial grado 3) usa solo <b>alcohol</b>, <b>acidez volátil</b> y <b>sulfatos</b>; el resto de controles se muestran por completitud (la app Streamlit recibe las 11 variables).</p>
+  </div>
+
+  <div id="note"></div>
+
+  <section class="full">
+    <h2 style="margin-bottom:14px">📈 Análisis exploratorio (EDA)</h2>
+    <div class="fig-grid">
+      <figure>
+        <img src="figuras/boxplots.png" alt="Boxplots de las 11 variables físico-químicas">
+        <figcaption>Boxplots por variable: outliers visibles en residual sugar, chlorides y sulfur dioxide</figcaption>
+      </figure>
+      <figure>
+        <img src="figuras/correlacion.png" alt="Matriz de correlación">
+        <figcaption>Matriz de correlación: alcohol (+0.48) y acidez volátil (−0.39) son las más ligadas a la calidad</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="full">
+    <div class="two-col">
+      <div class="card">
+        <h2>🔢 Correlación con quality</h2>
+        <table>
+          <thead><tr><th>Variable</th><th>Correlación</th></tr></thead>
+          <tbody id="corrRows"></tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h2>🔬 VIF (multicolinealidad)</h2>
+        <table>
+          <thead><tr><th>Variable</th><th>VIF</th></tr></thead>
+          <tbody id="vifRows"></tbody>
+        </table>
+        <p class="hint">VIF &gt; 5 ya es alerta; ninguno superó 10. fixed acidity (7.8) y density (6.3) son los más redundantes.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="full">
+    <div class="card">
+      <h2>🏆 Comparativa de modelos (train / test)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Modelo</th><th>R² train</th><th>R² test</th><th>RMSE train</th><th>RMSE test</th><th>MAE train</th><th>MAE test</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Regresión Lineal Múltiple</td><td>0.3480</td><td>0.4032</td><td>0.6513</td><td>0.6245</td><td>0.4996</td><td>0.5035</td></tr>
+          <tr><td>Polinomial grado 2</td><td>0.3517</td><td>0.4071</td><td>0.6495</td><td>0.6225</td><td>0.5021</td><td>0.5083</td></tr>
+          <tr class="best"><td>Polinomial grado 3 ✅</td><td>0.3716</td><td>0.4249</td><td>0.6394</td><td>0.6131</td><td>0.4952</td><td>0.4975</td></tr>
+        </tbody>
+      </table>
+      <p class="hint">El polinomial grado 3 ganó en test (R² 0.4249), pero la mejora frente a la lineal es modesta y su mayor número de términos implica riesgo de overfitting.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Dataset: Wine Quality — UCI Machine Learning Repository ·
+  <a href="https://archive.ics.uci.edu/dataset/186/wine+quality" target="_blank" rel="noopener">archive.ics.uci.edu/dataset/186/wine+quality</a> ·
+  subconjunto vino tinto (1599 registros) ·
+  repo: <a href="https://github.com/Rodrigo081004/Taller01-Regresion-3Casos" target="_blank" rel="noopener">Taller01-Regresion-3Casos</a>
+</footer>
+
+<script src="simulador.js"></script>
+</body>
+</html>
